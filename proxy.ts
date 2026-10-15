@@ -33,7 +33,7 @@ export async function proxy(req: NextRequest) {
             
             // Si todo está correcto, permitirle acceder a la página que solicitó
             return NextResponse.next();
-        } catch (error) {
+        } catch {
             // El JWT caducó o fue alterado: borrar sesión mandándolo al login
             return NextResponse.redirect(new URL('/login', req.url));
         }

@@ -14,6 +14,7 @@ import {
 import { Alert, Badge, Button, Card, CardHeader, EmptyState, LinkButton, Modal, PageHeader, Spinner } from '@/components/ui/kit';
 import VirtualCard from '@/components/VirtualCard';
 import { brand } from '@/lib/brand';
+import type { SystemSettings, UserTransaction } from '@/lib/types';
 import { formatDateTime, formatMoney } from '@/lib/format';
 
 interface UserProfile {
@@ -23,7 +24,7 @@ interface UserProfile {
     apellidoMaterno: string;
     isActive: boolean;
     balance: number;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 type Filter = 'ALL' | 'DEPOSIT' | 'TRANSFER' | 'WITHDRAWAL';
@@ -34,10 +35,10 @@ const filters: { id: Filter; label: string }[] = [
     { id: 'WITHDRAWAL', label: 'Retiros' },
 ];
 
-export default function DashboardView({ userProfile, settings }: { userProfile: UserProfile, settings: any }) {
+export default function DashboardView({ userProfile, settings }: { userProfile: UserProfile, settings?: Partial<SystemSettings> | null }) {
     const [showCard, setShowCard] = useState(false);
     const [filter, setFilter] = useState<Filter>('ALL');
-    const [transactions, setTransactions] = useState<any[]>([]);
+    const [transactions, setTransactions] = useState<UserTransaction[]>([]);
     const [loadingTx, setLoadingTx] = useState(true);
 
     const fetchTx = async () => {
@@ -143,7 +144,7 @@ export default function DashboardView({ userProfile, settings }: { userProfile: 
                             />
                         ) : (
                             <ul className="divide-y divide-line">
-                                {visible.map((tx: any) => {
+                                {visible.map((tx) => {
                                     const isDeposit = tx.type === 'DEPOSIT';
                                     const isTransfer = tx.type === 'TRANSFER';
                                     const isPending = tx.status === 'PENDING';

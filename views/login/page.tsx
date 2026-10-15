@@ -32,13 +32,13 @@ export default function LoginView() {
                 // Fetch the new session and update context
                 const session = await getSession();
                 if (session) {
-                    setUser(session as any);
+                    setUser(session);
                     router.push('/dashboard');
                 } else {
                     setError('Error al iniciar sesión.');
                 }
             }
-        } catch (err) {
+        } catch {
             setError('Ocurrió un error inesperado. Intenta de nuevo.');
         } finally {
             setLoading(false);

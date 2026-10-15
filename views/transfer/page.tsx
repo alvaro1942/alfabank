@@ -21,7 +21,7 @@ const BANCOS = [
 interface TransferViewProps {
     userProfile?: {
         balance?: number;
-        [key: string]: any;
+        [key: string]: unknown;
     } | null;
 }
 

@@ -33,7 +33,7 @@ export async function getSystemSettings() {
       cardNumber: "",
       qrNumber: "",
       clabe: ""
-    } as any; // Fallback defaults
+    }; // Fallback defaults
   }
 }
 

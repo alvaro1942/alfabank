@@ -11,7 +11,7 @@ import { formatMoney } from '@/lib/format';
 interface WithdrawViewProps {
     userProfile?: {
         balance?: number;
-        [key: string]: any;
+        [key: string]: unknown;
     } | null;
 }
 

@@ -48,7 +48,7 @@ export default function RegisterView() {
                     router.push('/login');
                 }, 2000);
             }
-        } catch (err) {
+        } catch {
             setError({ message: 'Ocurrió un error inesperado al enviar los datos. Intenta de nuevo.' });
         } finally {
             setLoading(false);

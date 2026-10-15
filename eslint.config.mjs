@@ -10,6 +10,8 @@ const eslintConfig = defineConfig([
       // El código heredado de acciones/vistas usa ny en datos serializados; se mantiene como aviso.
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/ban-ts-comment": "off",
+      // Permite descartar campos con desestructuración (p. ej. quitar el hash de la contraseña).
+      "@typescript-eslint/no-unused-vars": ["warn", { ignoreRestSiblings: true }],
     },
   },
   // Override default ignores of eslint-config-next.

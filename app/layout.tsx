@@ -38,7 +38,7 @@ export default async function RootLayout({
   return (
     <html lang="es">
       <body className={`${manrope.variable} ${plexMono.variable} min-h-dvh bg-canvas font-sans text-ink antialiased`}>
-        <AuthProvider initialUser={session as any}>
+        <AuthProvider initialUser={session}>
           <AppChrome>{children}</AppChrome>
         </AuthProvider>
       </body>

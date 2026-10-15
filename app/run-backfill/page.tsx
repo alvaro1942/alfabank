@@ -49,8 +49,8 @@ export default async function BackfillPage() {
                 result.push(`Cuenta reformada: ${account.id} por $${missingBalance}`);
             }
         }
-    } catch (e: any) {
-        return <div className="p-10 font-mono text-danger">Error: {e.message}</div>;
+    } catch (e) {
+        return <div className="p-10 font-mono text-danger">Error: {e instanceof Error ? e.message : String(e)}</div>;
     }
 
     return (

@@ -7,15 +7,16 @@ import BalancePanel from '@/components/BalancePanel';
 import CopyButton from '@/components/CopyButton';
 import { Alert, Button, Card, CardHeader, PageHeader } from '@/components/ui/kit';
 import { brand } from '@/lib/brand';
+import type { SystemSettings } from '@/lib/types';
 import { groupDigits } from '@/lib/format';
 
 interface DepositViewProps {
-    settings?: any;
+    settings?: Partial<SystemSettings> | null;
     userProfile?: {
         balance?: number;
         nombres?: string;
         apellidoPaterno?: string;
-        [key: string]: any;
+        [key: string]: unknown;
     } | null;
 }
 

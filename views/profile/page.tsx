@@ -41,7 +41,7 @@ export default function ProfileView({ userProfile }: { userProfile: UserProfile 
                 setIsEditing(false);
                 router.refresh();
             }
-        } catch (err) {
+        } catch {
             setError('Ocurrió un error inesperado. Intenta de nuevo.');
         } finally {
             setLoading(false);

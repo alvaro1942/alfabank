@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import bcrypt from "bcryptjs";
+import type { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { MIN_PASSWORD_LENGTH } from "@/lib/security";
 
@@ -56,7 +57,7 @@ export async function updateUserProfile(formData: FormData) {
     const confirmarContrasena = formData.get("confirmarContrasena") as string;
 
     // Build the data object to update
-    const updateData: any = {
+    const updateData: Prisma.UserUpdateInput = {
       nombres,
       apellidoPaterno,
       apellidoMaterno,
@@ -110,7 +111,7 @@ export async function getUserTransactions() {
       take: 20
     });
 
-    const serialized = transactions.map((t: any) => ({
+    const serialized = transactions.map((t) => ({
       id: t.id,
       amount: parseFloat(t.amount.toString()),
       type: t.type,
@@ -153,7 +154,7 @@ export async function createTransfer(formData: FormData) {
     }
 
     // Wrap the transaction logic properly
-    const result = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       // Find the user and main account
       const user = await tx.user.findUnique({
         where: { id: session.userId as string },
@@ -200,9 +201,10 @@ export async function createTransfer(formData: FormData) {
     revalidatePath("/admin");
     return { success: true, message: "Transferencia solicitada y en estado Pendiente." };
 
-  } catch (error: any) {
-    if (error.message === "INSUFFICIENT_FUNDS") return { error: "Saldo insuficiente para realizar esta transferencia." };
-    if (error.message === "ACCOUNT_INACTIVE") return { error: "Tu cuenta se encuentra desactivada." };
+  } catch (error) {
+    const code = error instanceof Error ? error.message : "";
+    if (code === "INSUFFICIENT_FUNDS") return { error: "Saldo insuficiente para realizar esta transferencia." };
+    if (code === "ACCOUNT_INACTIVE") return { error: "Tu cuenta se encuentra desactivada." };
     
     console.error("Error creating transfer:", error);
     return { error: "Ocurrió un error al procesar la transferencia." };

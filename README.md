@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Alfa bank
 
-## Getting Started
+Maqueta interactiva de una plataforma financiera: registro de usuarios, depósitos, transferencias y retiros **simulados**, con panel de administración. Ninguna operación mueve dinero real.
 
-First, run the development server:
+Construido con Next.js 16 (App Router), React 19, Tailwind CSS 4, Prisma 7 y PostgreSQL (Neon).
+
+## Requisitos
+
+- Node.js 20 o superior
+- Una base de datos PostgreSQL **propia** de este proyecto (por ejemplo en [Neon](https://neon.tech))
+
+## Puesta en marcha
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local      # completa los valores (ver abajo)
+npx prisma db push              # crea las tablas en la base
+npm run create-admin            # crea el primer administrador
+npm run dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Variables de entorno
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Obligatoria | Descripción |
+|---|---|---|
+| `DATABASE_URL` | Sí | Cadena de conexión de PostgreSQL. |
+| `JWT_SECRET` | Sí en producción | Clave para firmar sesiones. Genera una con `openssl rand -base64 48`. |
+| `BLOB_READ_WRITE_TOKEN` | No | Vercel Blob (store **privado**) para guardar la identificación del registro. Sin él, la cuenta se crea pero sin archivo. |
+| `NEXT_PUBLIC_SUPPORT_WHATSAPP` | No | Número de soporte (solo dígitos con lada). Si está vacío, no aparece el botón de soporte. |
+| `ALLOWED_ORIGINS` | No | Dominios extra para Server Actions, separados por coma. Normalmente no hace falta. |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Solo local | Las usa únicamente `npm run create-admin`. No las subas al hosting. |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` | Servidor de desarrollo. |
+| `npm run build` / `npm start` | Build y arranque en producción. |
+| `npm run lint` | ESLint. |
+| `npm run create-admin` | Crea (o promueve) el administrador definido en `ADMIN_EMAIL` / `ADMIN_PASSWORD`. |
+| `node change-role.mjs correo@ejemplo.com` | Convierte a un usuario existente en administrador. |
 
-To learn more about Next.js, take a look at the following resources:
+## Estructura
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/` rutas y Server Actions (`app/actions/`: auth, user, admin, settings).
+- `views/` pantallas de cada ruta (componentes de cliente).
+- `components/` interfaz compartida; `components/ui/kit.tsx` es el kit de UI.
+- `lib/brand.ts` nombre, textos y navegación; los colores y tipografías están en `app/globals.css`.
+- `lib/security.ts` reglas de contraseña, archivos y bloqueo de login.
+- `proxy.ts` protege las rutas privadas.
+- `prisma/schema.prisma` modelo de datos (User, Account, Transaction, SystemSetting).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Seguridad
 
-## Deploy on Vercel
+- Contraseñas con bcrypt, mínimo 8 caracteres.
+- Sesión en cookie `httpOnly` (JWT, 24 h). En cada petición se revisa en la base que la cuenta siga activa y se toma el rol de ahí.
+- Bloqueo de 15 minutos tras 5 intentos de login fallidos.
+- Identificación: solo JPG, PNG, WEBP o PDF, máximo 4 MB, en un store privado.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Despliegue en Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Define `DATABASE_URL` y `JWT_SECRET` (Production y Preview).
+2. Opcional: crea un Blob store **privado** y conéctalo al proyecto con el token de lectura/escritura.
+3. Despliega. Si cambias el esquema de Prisma, ejecuta `npx prisma db push` contra la base antes de desplegar.

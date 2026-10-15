@@ -34,6 +34,7 @@ import {
 import { getSystemSettings, updateSystemSettings } from "@/app/actions/settings";
 import { Alert, Badge, Button, Card, ConfirmDialog, EmptyState, Field, Input, PageHeader, Spinner } from "@/components/ui/kit";
 import { formatDateTime, formatMoney } from "@/lib/format";
+import type { AdminAccount, AdminUser, PendingTransfer } from "@/lib/types";
 
 type Tab = 'usuarios' | 'fondos' | 'aprobaciones' | 'ajustes';
 
@@ -68,9 +69,9 @@ function Stat({ label, value, icon: Icon, tone = 'brand' }: { label: string; val
 
 export default function AdminView() {
     const [activeTab, setActiveTab] = useState<Tab>('usuarios');
-    const [users, setUsers] = useState<any[]>([]);
-    const [accounts, setAccounts] = useState<any[]>([]);
-    const [pendingTransfers, setPendingTransfers] = useState<any[]>([]);
+    const [users, setUsers] = useState<AdminUser[]>([]);
+    const [accounts, setAccounts] = useState<AdminAccount[]>([]);
+    const [pendingTransfers, setPendingTransfers] = useState<PendingTransfer[]>([]);
     const [systemSettings, setSystemSettings] = useState({ cardNumber: '', qrNumber: '', clabe: '' });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -102,7 +103,7 @@ export default function AdminView() {
                 qrNumber: settings?.qrNumber || '',
                 clabe: settings?.clabe || '',
             });
-        } catch (err) {
+        } catch {
             setError("Ocurrió un error inesperado al conectar con la base de datos.");
         } finally {
             setLoading(false);
@@ -142,7 +143,7 @@ export default function AdminView() {
     const activeUsers = users.filter(u => u.isActive).length;
 
     /** Ejecuta una acción del servidor mostrando mensajes y recargando datos. */
-    const perform = async (key: string, action: () => Promise<any>, fallback: string, after?: () => void) => {
+    const perform = async (key: string, action: () => Promise<{ error?: string; success?: boolean; message?: string } | undefined>, fallback: string, after?: () => void) => {
         setBusy(key);
         setError("");
         setSuccess("");
@@ -195,7 +196,7 @@ export default function AdminView() {
         run: () => perform(`del-${userId}`, () => deleteUser(userId), "Ocurrió un error al eliminar el usuario."),
     });
 
-    const askToggleStatus = (user: any) => setConfirm({
+    const askToggleStatus = (user: AdminUser) => setConfirm({
         title: user.isActive ? 'Desactivar usuario' : 'Activar usuario',
         label: user.isActive ? 'Desactivar' : 'Activar',
         destructive: user.isActive,
@@ -203,7 +204,7 @@ export default function AdminView() {
         run: () => perform(`toggle-${user.id}`, () => toggleUserStatus(user.id), "Ocurrió un error al cambiar estado del usuario."),
     });
 
-    const askToggleRole = (user: any) => setConfirm({
+    const askToggleRole = (user: AdminUser) => setConfirm({
         title: user.role === 'ADMIN' ? 'Quitar rol de administrador' : 'Hacer administrador',
         label: user.role === 'ADMIN' ? 'Quitar rol' : 'Hacer administrador',
         destructive: user.role === 'ADMIN',
@@ -211,7 +212,7 @@ export default function AdminView() {
         run: () => perform(`role-${user.id}`, () => toggleAdminRole(user.id), "Error actualizando rol."),
     });
 
-    const askResolve = (tx: any, action: 'APPROVE' | 'REJECT') => setConfirm({
+    const askResolve = (tx: PendingTransfer, action: 'APPROVE' | 'REJECT') => setConfirm({
         title: action === 'APPROVE' ? 'Autorizar transferencia' : 'Rechazar transferencia',
         label: action === 'APPROVE' ? 'Autorizar' : 'Rechazar y devolver fondos',
         destructive: action === 'REJECT',

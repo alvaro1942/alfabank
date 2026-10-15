@@ -27,7 +27,7 @@ export async function getAllUsers() {
       include: { accounts: true },
       orderBy: { createdAt: 'desc' }
     });
-    const mappedUsers = users.map((u: any) => {
+    const mappedUsers = users.map((u) => {
       const mainAccount = u.accounts[0];
       const { accounts, password, ...userRest } = u; // nunca enviar el hash al navegador
       return {
@@ -54,7 +54,7 @@ export async function getAllAccountsTransactions() {
     });
     
     // Map to an easy layout: one account per user or 0
-    const accountsInfo = usersWithAccounts.map((u: any) => {
+    const accountsInfo = usersWithAccounts.map((u) => {
       const mainAccount = u.accounts[0]; // Assuming 1 account per user right now
       return {
         userId: u.id,
@@ -215,7 +215,7 @@ export async function getPendingTransfers() {
       orderBy: { createdAt: 'desc' }
     });
 
-    const formatted = pendingTransfers.map((tx: any) => ({
+    const formatted = pendingTransfers.map((tx) => ({
       id: tx.id,
       amount: parseFloat(tx.amount.toString()),
       destinationName: tx.destinationName,
@@ -241,7 +241,7 @@ export async function resolveTransfer(transactionId: string, action: 'APPROVE' |
   if (!(await isAdmin())) return { error: "No autorizado." };
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       const transaction = await tx.transaction.findUnique({
         where: { id: transactionId },
         include: { account: true }
@@ -276,7 +276,7 @@ export async function resolveTransfer(transactionId: string, action: 'APPROVE' |
     revalidatePath('/admin');
     revalidatePath('/dashboard');
     return { success: true, message: action === 'APPROVE' ? 'Transferencia autorizada.' : 'Transferencia rechazada y fondos devueltos.' };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error resolving transfer:", error);
     return { error: "Error al resolver la transferencia." };
   }

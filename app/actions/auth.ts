@@ -181,7 +181,7 @@ export async function getSession() {
     });
     if (!user || !user.isActive) return null;
 
-    return { ...payload, userId: payload.userId as string, role: user.role };
+    return { ...payload, userId: payload.userId as string, email: payload.email as string, nombre: payload.nombre as string, role: user.role };
   } catch {
     return null;
   }
