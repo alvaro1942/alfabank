@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model User {
+  id               String   @id @default(uuid())
+  nombres          String
+  apellidoPaterno  String
+  apellidoMaterno  String
+  curp             String   @unique
+  fechaNacimiento  DateTime
+  celular          String
+  direccion        String
+  correo           String   @unique
+  password         String
+  ineFileName      String?  // References the file name of the INE image, if stored in S3/disk
+  role             String   @default("USER")
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  accounts         Account[]
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance   Decimal  @default(0.0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  amount           Decimal
+  type             String   // "DEPOSIT" or "WITHDRAWAL" or "TRANSFER"
+  status           String   @default("COMPLETED") // "COMPLETED", "PENDING", "REJECTED"
+  destinationName  String?  
+  destinationBank  String?  
+  destinationClabe String?  
+  description      String?  
+  createdAt        DateTime @default(now())
+}
+
+model SystemSetting {
+  id         String   @id @default("global")
+  cardNumber String   @default("")
+  qrNumber   String   @default("")
+  clabe      String   @default("")
+  updatedAt  DateTime @updatedAt
+}
+

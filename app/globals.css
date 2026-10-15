@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/*
+ * Alfa bank — tokens de diseño.
+ * Cambiar un valor aquí actualiza toda la interfaz. No uses colores escritos a mano en los componentes.
+ */
+@theme {
+  /* Marca */
+  --color-brand-50: #e8f5fc;
+  --color-brand-100: #cfeaf8;
+  --color-brand-200: #9fd4f1;
+  --color-brand-400: #33aae0;
+  --color-brand-500: #0095d9; /* principal */
+  --color-brand-600: #0079b5; /* botones y enlaces (contraste AA con texto blanco) */
+  --color-brand-700: #05609a;
+  --color-brand-800: #084b83; /* azul profundo */
+  --color-brand-900: #0a3560;
+
+  /* Fondos y superficies */
+  --color-canvas: #f5f8fc;
+  --color-surface: #ffffff;
+  --color-surface-muted: #eef3f9;
+  --color-line: #dbe4ee;
+  --color-line-strong: #c3d0de;
+
+  /* Texto */
+  --color-ink: #14263d;
+  --color-muted: #566a80;
+
+  /* Estados */
+  --color-success: #0b7a4b;
+  --color-success-soft: #e3f6ec;
+  --color-warning: #8a5a00;
+  --color-warning-soft: #fff3d6;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdeceb;
+
+  /* Sombras */
+  --shadow-card: 0 1px 2px rgb(20 38 61 / 0.04), 0 4px 16px rgb(20 38 61 / 0.05);
+  --shadow-pop: 0 12px 40px rgb(8 75 131 / 0.18);
+
+  /* Radios */
+  --radius-card: 1rem;
+
+  /* Tipografía */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: light;
+  --background: var(--color-canvas);
+  --foreground: var(--color-ink);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-brand-100);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+@keyframes alfa-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes alfa-rise {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-fade { animation: alfa-fade 0.18s ease-out; }
+.animate-rise { animation: alfa-rise 0.22s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* Espacio inferior para la navegación móvil en el área privada */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
