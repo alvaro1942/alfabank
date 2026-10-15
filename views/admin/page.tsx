@@ -176,7 +176,7 @@ export default function AdminView() {
     const askReset = (userId: string, name: string) => {
         const newPass = passwordInputs[userId];
         if (!newPass || newPass.length < 6) {
-            setError("Ingresa una nueva contraseña de al menos 6 caracteres.");
+            setError("Ingresa una nueva contraseña de al menos 8 caracteres.");
             return;
         }
         setConfirm({

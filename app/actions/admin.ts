@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "./auth";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
+import { MIN_PASSWORD_LENGTH } from "@/lib/security";
 
 // Check if user is admin
 async function isAdmin() {
@@ -284,8 +285,8 @@ export async function resolveTransfer(transactionId: string, action: 'APPROVE' |
 export async function resetUserPassword(userId: string, newPassword: string) {
   if (!(await isAdmin())) return { error: "No autorizado." };
   
-  if (!newPassword || newPassword.length < 6) {
-    return { error: "La contraseña debe tener al menos 6 caracteres." };
+  if (!newPassword || newPassword.length < MIN_PASSWORD_LENGTH) {
+    return { error: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.` };
   }
 
   try {

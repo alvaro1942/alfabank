@@ -7,7 +7,7 @@ const secretKey = getSessionSecret();
 
 const protectedRoutes = ['/dashboard', '/admin', '/deposit', '/transfer', '/withdraw', '/profile', '/run-backfill'];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl;
     
     // Revisar si la ruta actual es una de las rutas protegidas

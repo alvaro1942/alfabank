@@ -6,6 +6,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { put } from "@vercel/blob";
 import { getSessionSecret } from "@/lib/session-secret";
+import { ID_FILE_MAX_BYTES, ID_FILE_TYPES, LOCKOUT_MINUTES, MAX_FAILED_LOGINS, MIN_PASSWORD_LENGTH } from "@/lib/security";
 
 const secretKey = getSessionSecret();
 
@@ -28,6 +29,19 @@ export async function registerUser(formData: FormData) {
     // Server-side validation
     if (correo !== confirmarCorreo) return { error: "Los correos no coinciden.", field: "confirmarCorreo" };
     if (password !== confirmarPassword) return { error: "Las contraseñas no coinciden.", field: "confirmarPassword" };
+    if (!password || password.length < MIN_PASSWORD_LENGTH) {
+      return { error: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`, field: "password" };
+    }
+
+    const hasIneFile = ineFile instanceof File && ineFile.size > 0;
+    if (hasIneFile) {
+      if (!ID_FILE_TYPES[ineFile.type]) {
+        return { error: "La identificación debe ser una imagen (JPG, PNG, WEBP) o un PDF.", field: "ineFile" };
+      }
+      if (ineFile.size > ID_FILE_MAX_BYTES) {
+        return { error: "El archivo es demasiado pesado. El máximo permitido es 4MB.", field: "ineFile" };
+      }
+    }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -40,13 +54,19 @@ export async function registerUser(formData: FormData) {
     });
     if (existingCurp) return { error: "Esta CURP ya está registrada.", field: "curp" };
 
-    // Save File
-    let inexFileName = null;
-    if (ineFile && ineFile.size > 0) {
-      const blob = await put(`identifications/${Date.now()}_${ineFile.name.replaceAll(" ", "_")}`, ineFile, {
-        access: 'private',
-      });
-      inexFileName = blob.url;
+    // Save File: la identificación es opcional, un fallo del almacenamiento no debe impedir el registro
+    let inexFileName: string | null = null;
+    let idUploadFailed = false;
+    if (hasIneFile) {
+      try {
+        const blob = await put(`identifications/${Date.now()}_${crypto.randomUUID()}.${ID_FILE_TYPES[ineFile.type]}`, ineFile, {
+          access: 'private',
+        });
+        inexFileName = blob.url;
+      } catch (uploadError) {
+        console.error("Error uploading identification: ", uploadError);
+        idUploadFailed = true;
+      }
     }
 
     // Hash password
@@ -68,7 +88,12 @@ export async function registerUser(formData: FormData) {
       },
     });
 
-    return { success: true, message: "Cuenta creada exitosamente" };
+    return {
+      success: true,
+      message: idUploadFailed
+        ? "Cuenta creada exitosamente. No se pudo guardar la identificación; podrás entregarla después."
+        : "Cuenta creada exitosamente",
+    };
   } catch (error) {
     console.error("Error registering user: ", error);
     return { error: "Ocurrió un error al registrar el usuario, intenta de nuevo." };
@@ -89,8 +114,28 @@ export async function loginUser(formData: FormData) {
     if (!user) return { error: "Credenciales incorrectas." };
     if (!user.isActive) return { error: "Esta cuenta ha sido desactivada." };
 
+    if (user.lockedUntil && user.lockedUntil > new Date()) {
+      return { error: "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos." };
+    }
+
     const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) return { error: "Credenciales incorrectas." };
+    if (!isValidPassword) {
+      // Si el bloqueo anterior ya venció, el conteo empieza de cero
+      const failedLogins = (user.lockedUntil ? 0 : user.failedLogins) + 1;
+      const lock = failedLogins >= MAX_FAILED_LOGINS;
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedLogins: lock ? 0 : failedLogins,
+          lockedUntil: lock ? new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000) : null,
+        },
+      });
+      return { error: "Credenciales incorrectas." };
+    }
+
+    if (user.failedLogins > 0 || user.lockedUntil) {
+      await prisma.user.update({ where: { id: user.id }, data: { failedLogins: 0, lockedUntil: null } });
+    }
 
     const token = await new SignJWT({ userId: user.id, email: user.correo, nombre: user.nombres, role: user.role })
       .setProtectedHeader({ alg: "HS256" })
@@ -127,8 +172,17 @@ export async function getSession() {
 
   try {
     const { payload } = await jwtVerify(session, secretKey);
-    return payload;
-  } catch (error) {
+
+    // El token por sí solo no basta: si la cuenta se desactivó o se eliminó, la sesión deja de valer
+    // y el rol se toma de la base de datos, no del token.
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId as string },
+      select: { isActive: true, role: true },
+    });
+    if (!user || !user.isActive) return null;
+
+    return { ...payload, userId: payload.userId as string, role: user.role };
+  } catch {
     return null;
   }
 }
