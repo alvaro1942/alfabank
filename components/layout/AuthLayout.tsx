@@ -45,7 +45,6 @@ export default function AuthLayout({
               ))}
             </ul>
           </div>
-          <p className="relative max-w-sm text-xs leading-relaxed text-muted">{brand.demoNotice}</p>
         </div>
       </aside>
 
@@ -62,7 +61,6 @@ export default function AuthLayout({
         <div className="flex flex-1 items-center justify-center py-8">
           <div className={`w-full ${wide ? "max-w-2xl" : "max-w-md"}`}>{children}</div>
         </div>
-        <p className="text-center text-xs text-muted lg:hidden">{brand.demoNotice}</p>
       </main>
     </div>
   );

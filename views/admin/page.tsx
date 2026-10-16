@@ -238,7 +238,7 @@ export default function AdminView() {
             <PageHeader
                 eyebrow="Panel"
                 title="Administración"
-                description="Gestiona usuarios, saldos de prueba, aprobaciones y los datos de depósito."
+                description="Gestiona usuarios, saldos, aprobaciones y los datos de depósito."
                 action={
                     <Button variant="secondary" size="sm" onClick={loadData} disabled={loading}>
                         <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden /> Actualizar

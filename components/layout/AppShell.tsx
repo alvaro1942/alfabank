@@ -115,7 +115,6 @@ function AppShell({ children }: { children: ReactNode }) {
             <LogOut className="h-4 w-4" aria-hidden />
             Cerrar sesión
           </button>
-          <p className="text-[11px] leading-snug text-muted">{brand.demoNotice}</p>
         </div>
       </aside>
 
@@ -151,7 +150,6 @@ function AppShell({ children }: { children: ReactNode }) {
 
       <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:pb-12 lg:pt-10">
         {children}
-        <p className="mt-10 text-center text-xs text-muted lg:hidden">{brand.demoNotice}</p>
       </main>
 
       {/* Navegación compacta — móvil */}

@@ -7,7 +7,6 @@ import {
     ArrowUpFromLine,
     CreditCard,
     History,
-    Lock,
     RefreshCw,
     Send,
 } from 'lucide-react';
@@ -200,12 +199,8 @@ export default function DashboardView({ userProfile, settings }: { userProfile: 
                 <div className="space-y-4">
                     <VirtualCard number={cardNumber} holder={holder} />
                     {!cardNumber && (
-                        <Alert tone="info">El administrador aún no ha configurado el número de tarjeta de demostración.</Alert>
+                        <Alert tone="info">El administrador aún no ha configurado el número de tarjeta.</Alert>
                     )}
-                    <p className="flex items-start gap-2 rounded-xl bg-brand-50 p-3 text-xs leading-relaxed text-brand-800">
-                        <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
-                        Tarjeta ficticia para la demostración de {brand.name}; no realiza cargos ni pagos reales.
-                    </p>
                 </div>
             </Modal>
         </div>

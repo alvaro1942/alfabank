@@ -14,10 +14,9 @@ export const brand = {
   wordmark: { strong: "Alfa", light: "bank" },
   tagline: "Tu cuenta, clara y a la mano.",
   description:
-    "Alfa bank es una maqueta interactiva de plataforma financiera: registra usuarios, simula depósitos, transferencias y retiros con operaciones ficticias.",
-  demoNotice: "Entorno de demostración · Todas las operaciones son simuladas y no mueven dinero real.",
+    "Alfa bank es una plataforma financiera: registra usuarios, realiza depósitos, transferencias y retiros.",
   currency: "MXN",
-  /** Datos ficticios mostrados en la tarjeta virtual de demostración. */
+  /** Datos mostrados en la tarjeta virtual. */
   card: { expiry: "12/28", cvv: "222" },
   support: {
     /** Se define con NEXT_PUBLIC_SUPPORT_WHATSAPP (solo dígitos con lada de país). Si está vacío, el acceso a soporte no se muestra. */

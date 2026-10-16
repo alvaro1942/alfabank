@@ -80,9 +80,9 @@ export default function RegisterView() {
     return (
         <AuthLayout
             wide
-            title="Abre tu cuenta de demostración."
-            subtitle="Completa tus datos para crear un usuario y explorar la plataforma con operaciones simuladas."
-            points={['Registro en un solo formulario', 'Un administrador puede abonar saldo de prueba', 'Todos los movimientos son ficticios']}
+            title="Abre tu cuenta."
+            subtitle="Completa tus datos para crear tu usuario y comenzar a operar."
+            points={['Registro en un solo formulario', 'Consulta tu saldo y movimientos', 'Depósitos, transferencias y retiros']}
         >
             <div className="rounded-3xl border border-line bg-surface p-6 shadow-card sm:p-8">
                 <h1 className="text-2xl font-extrabold tracking-tight text-ink">Crear cuenta</h1>
@@ -105,9 +105,6 @@ export default function RegisterView() {
                             <Field label="Nombres" htmlFor="nombres" required>
                                 <Input id="nombres" name="nombres" placeholder="Tus nombres" required autoComplete="given-name" />
                             </Field>
-                            <Field label="Fecha de nacimiento" htmlFor="fechaNacimiento" required>
-                                <Input id="fechaNacimiento" name="fechaNacimiento" type="date" required autoComplete="bday" />
-                            </Field>
                             <Field label="Apellido paterno" htmlFor="apellidoPaterno" required>
                                 <Input id="apellidoPaterno" name="apellidoPaterno" placeholder="Primer apellido" required autoComplete="family-name" />
                             </Field>
@@ -115,6 +112,9 @@ export default function RegisterView() {
                                 <Input id="apellidoMaterno" name="apellidoMaterno" placeholder="Segundo apellido" required />
                             </Field>
                         </div>
+                        <Field label="Fecha de nacimiento" htmlFor="fechaNacimiento" required>
+                            <Input id="fechaNacimiento" name="fechaNacimiento" type="date" required autoComplete="bday" />
+                        </Field>
                         <Field label="CURP" htmlFor="curp" required error={fieldError('curp')}>
                             <Input id="curp" name="curp" placeholder="18 caracteres" maxLength={18} required invalid={!!fieldError('curp')} className="font-mono uppercase" />
                         </Field>
@@ -158,7 +158,7 @@ export default function RegisterView() {
                         </div>
                     </Section>
 
-                    <Section n={4} title="Identificación (opcional)">
+                    <Section n={4} title="Identificación oficial (INE) *">
                         <label className="group relative flex h-32 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-line-strong bg-canvas text-center transition-colors hover:border-brand-500 hover:bg-brand-50 focus-within:border-brand-500">
                             {fileName ? (
                                 <>
@@ -173,7 +173,7 @@ export default function RegisterView() {
                                     <p className="text-xs text-muted">JPG, PNG o PDF · máximo 4 MB</p>
                                 </>
                             )}
-                            <input name="ineFile" type="file" aria-label="Identificación oficial" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" accept="image/jpeg, image/png, application/pdf" onChange={handleFileChange} />
+                            <input name="ineFile" type="file" required aria-label="Identificación oficial" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" accept="image/jpeg, image/png, application/pdf" onChange={handleFileChange} />
                         </label>
                         {fieldError('ineFile') && <p className="text-xs font-semibold text-danger">{fieldError('ineFile')}</p>}
                     </Section>

@@ -3,7 +3,7 @@ import { groupDigits } from "@/lib/format";
 import { LogoMark } from "@/components/ui/Logo";
 
 /**
- * Tarjeta virtual de demostración. Fondo azul sólido con trazos geométricos
+ * Tarjeta virtual. Fondo azul sólido con trazos geométricos
  * (sin degradados de la versión anterior). `masked` oculta los dígitos centrales.
  */
 export default function VirtualCard({

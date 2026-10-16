@@ -20,34 +20,6 @@ interface DepositViewProps {
     } | null;
 }
 
-/** Patrón decorativo con apariencia de QR. No es escaneable ni codifica datos. */
-function QrPlaceholder() {
-    const size = 21;
-    const finder = (x: number, y: number) => {
-        const inBox = (ox: number, oy: number) => x >= ox && x < ox + 7 && y >= oy && y < oy + 7;
-        for (const [ox, oy] of [[0, 0], [size - 7, 0], [0, size - 7]]) {
-            if (inBox(ox, oy)) {
-                const dx = x - ox, dy = y - oy;
-                return dx === 0 || dy === 0 || dx === 6 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4);
-            }
-        }
-        return null;
-    };
-    const cells: React.ReactNode[] = [];
-    for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-            const f = finder(x, y);
-            const on = f !== null ? f : ((x * 7 + y * 13 + x * y) % 5 < 2);
-            if (on) cells.push(<rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" />);
-        }
-    }
-    return (
-        <svg viewBox={`-1 -1 ${size + 2} ${size + 2}`} className="h-full w-full text-brand-900" fill="currentColor" role="img" aria-label="Código QR de demostración" shapeRendering="crispEdges">
-            {cells}
-        </svg>
-    );
-}
-
 export default function DepositView({ settings, userProfile: initialProfile }: DepositViewProps) {
     const [profile, setProfile] = useState(initialProfile || null);
     const [method, setMethod] = useState<'spei' | 'cash'>('spei');
@@ -76,7 +48,7 @@ export default function DepositView({ settings, userProfile: initialProfile }: D
             <PageHeader
                 eyebrow="Operaciones"
                 title="Depositar"
-                description="Consulta los datos para abonar saldo a tu cuenta de demostración."
+                description="Consulta los datos para abonar saldo a tu cuenta."
             />
 
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-8">
@@ -114,7 +86,7 @@ export default function DepositView({ settings, userProfile: initialProfile }: D
 
                                 <dl className="divide-y divide-line rounded-xl border border-line text-sm">
                                     {[
-                                        ['Beneficiario', brand.name + ' (demostración)'],
+                                        ['Beneficiario', brand.name],
                                         ['Titular de la cuenta', holder || '—'],
                                         ['Concepto', 'Abono a cuenta propia'],
                                     ].map(([k, v]) => (
@@ -124,19 +96,20 @@ export default function DepositView({ settings, userProfile: initialProfile }: D
                                         </div>
                                     ))}
                                 </dl>
-                                <Alert tone="info">Es un entorno de demostración: un administrador es quien acredita el saldo en tu cuenta.</Alert>
+                                <div className="mx-auto w-full max-w-[200px]">
+                                    <div className="aspect-square rounded-2xl border border-line bg-white p-3">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src="/deposit/qr" alt="Código QR de pago" className="h-full w-full object-contain" />
+                                    </div>
+                                    <p className="mt-2 text-center text-[11px] font-semibold text-muted">Escanea el código para pagar</p>
+                                </div>
+                                <Alert tone="info">Un administrador acredita el saldo en tu cuenta una vez recibido el depósito.</Alert>
                             </div>
                         </Card>
                     ) : (
                         <Card>
-                            <CardHeader title="Depósito en efectivo" subtitle="Referencia y código de demostración" icon={<Store className="h-4 w-4" aria-hidden />} />
-                            <div className="grid gap-6 p-5 sm:grid-cols-[200px_1fr] sm:p-6">
-                                <div className="mx-auto w-full max-w-[200px]">
-                                    <div className="aspect-square rounded-2xl border border-line bg-white p-3">
-                                        <QrPlaceholder />
-                                    </div>
-                                    <p className="mt-2 text-center text-[11px] font-semibold text-muted">QR ilustrativo, no escaneable</p>
-                                </div>
+                            <CardHeader title="Depósito en efectivo" subtitle="Referencia y código de pago" icon={<Store className="h-4 w-4" aria-hidden />} />
+                            <div className="grid gap-6 p-5 sm:p-6">
                                 <div className="space-y-5">
                                     <ol className="space-y-3 text-sm text-muted">
                                         {[

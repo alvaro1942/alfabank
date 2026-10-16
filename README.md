@@ -1,6 +1,6 @@
 # Alfa bank
 
-Maqueta interactiva de una plataforma financiera: registro de usuarios, depósitos, transferencias y retiros **simulados**, con panel de administración. Ninguna operación mueve dinero real.
+Plataforma financiera: registro de usuarios, depósitos, transferencias y retiros, con panel de administración.
 
 Construido con Next.js 16 (App Router), React 19, Tailwind CSS 4, Prisma 7 y PostgreSQL (Neon).
 

@@ -108,7 +108,7 @@ export default function TransferView({ userProfile: initialProfile }: TransferVi
             <PageHeader
                 eyebrow="Operaciones"
                 title="Transferir"
-                description="Solicita una transferencia simulada. Quedará pendiente hasta que un administrador la autorice."
+                description="Solicita una transferencia. Quedará pendiente hasta que un administrador la autorice."
             />
 
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-8">
@@ -202,7 +202,6 @@ export default function TransferView({ userProfile: initialProfile }: TransferVi
                         <ul className="mt-3 space-y-2.5 text-xs leading-relaxed text-muted">
                             <li>• Verifica que la <strong className="text-ink">CLABE tenga 18 dígitos</strong>.</li>
                             <li>• Puedes seguir el estado en tus movimientos.</li>
-                            <li>• Es una operación de demostración: no se envía dinero real.</li>
                         </ul>
                     </Card>
                 </aside>

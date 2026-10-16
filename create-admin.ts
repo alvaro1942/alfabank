@@ -45,7 +45,7 @@ async function main() {
                     fechaNacimiento: new Date("1990-01-01"),
                     celular: "0000000000",
                     correo: correo!,
-                    direccion: "Demostración",
+                    direccion: "Oficinas centrales",
                     password: hashedPassword,
                     role: "ADMIN",
                 },

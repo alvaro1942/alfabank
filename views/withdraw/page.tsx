@@ -46,7 +46,7 @@ export default function WithdrawView({ userProfile: initialProfile }: WithdrawVi
         setError('');
     };
 
-    // Simulación local: no modifica saldo ni base de datos (igual que la versión original).
+    // Genera las claves localmente; no modifica saldo ni base de datos.
     const handleWithdraw = (e?: React.FormEvent) => {
         e?.preventDefault();
         const numAmount = parseFloat(amount);
@@ -75,7 +75,7 @@ export default function WithdrawView({ userProfile: initialProfile }: WithdrawVi
             <PageHeader
                 eyebrow="Operaciones"
                 title="Retirar"
-                description="Genera claves de retiro de demostración. Esta simulación no modifica tu saldo."
+                description="Genera claves de retiro a partir de tu saldo disponible."
             />
 
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-8">
@@ -125,8 +125,8 @@ export default function WithdrawView({ userProfile: initialProfile }: WithdrawVi
                         <h3 className="text-sm font-extrabold text-ink">Cómo funciona</h3>
                         <ol className="mt-3 space-y-2.5 text-xs leading-relaxed text-muted">
                             <li>1. Indica el monto, sin exceder tu saldo.</li>
-                            <li>2. Genera las 4 claves de la simulación.</li>
-                            <li>3. Las claves son ilustrativas: no se descuenta saldo ni se guarda un movimiento.</li>
+                            <li>2. Genera las 4 claves de retiro.</li>
+                            <li>3. Proporciona las claves a soporte para autorizar tu retiro.</li>
                         </ol>
                     </Card>
                 </aside>
@@ -151,7 +151,6 @@ export default function WithdrawView({ userProfile: initialProfile }: WithdrawVi
                         ))}
                     </div>
                     <CopyButton text={codes.join(' - ')} label="Copiar todas las claves" doneLabel="Claves copiadas" full />
-                    <p className="text-xs text-muted">Simulación sin efecto en tu saldo.</p>
                 </div>
             </Modal>
         </div>

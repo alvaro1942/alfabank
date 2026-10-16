@@ -34,13 +34,14 @@ export async function registerUser(formData: FormData) {
     }
 
     const hasIneFile = ineFile instanceof File && ineFile.size > 0;
-    if (hasIneFile) {
-      if (!ID_FILE_TYPES[ineFile.type]) {
-        return { error: "La identificación debe ser una imagen (JPG, PNG, WEBP) o un PDF.", field: "ineFile" };
-      }
-      if (ineFile.size > ID_FILE_MAX_BYTES) {
-        return { error: "El archivo es demasiado pesado. El máximo permitido es 4MB.", field: "ineFile" };
-      }
+    if (!hasIneFile) {
+      return { error: "La identificación oficial (INE) es obligatoria.", field: "ineFile" };
+    }
+    if (!ID_FILE_TYPES[ineFile.type]) {
+      return { error: "La identificación debe ser una imagen (JPG, PNG, WEBP) o un PDF.", field: "ineFile" };
+    }
+    if (ineFile.size > ID_FILE_MAX_BYTES) {
+      return { error: "El archivo es demasiado pesado. El máximo permitido es 4MB.", field: "ineFile" };
     }
 
     // Check if user already exists
